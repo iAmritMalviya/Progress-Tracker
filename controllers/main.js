@@ -15,54 +15,9 @@ conn.connect(function (err) {
 
 
 
-main.get = async (req, res) => {
-    const { dateRange } = req.body
-    const fromDate = '2023-05-23 14:56:33'
-    const toDate = '2023-05-23 19:56:33'
-    const getQuery =
-        `SELECT learnings, createdAt from learnings
-     WHERE createdAt BETWEEN '${fromDate}' AND '${toDate}'`
+main.get = async (req, res) => { 
 
-    conn.query(getQuery, function (err, result) {
-        if (err) throw new Error(err)
-
-        const response = result.map(data => {
-            let learnings = data.learnings.split(',')
-            let count = learnings.length;
-            return {
-                learnings,
-                count,
-                createdAt: data.createdAt
-            }
-        })
-        // res.status(200).json(response)
-        return res.render('index', {title: 'chartJS', response: response})
-    })
+        return res.render('index', {title: 'chartJS'})
+   
 }
 
-main.create = async (req, res) => {
-    const { learning } = req.body;
-    console.log("req.body", req.body)
-    const createTable = `
-    CREATE TABLE IF NOT EXISTS learnings
-    (id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    learnings VARCHAR(255),
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    type VARCHAR(20) DEFAULT "growthhub:learning" )
-    `
-
-    conn.query(createTable, function (err, result) {
-        if (err) throw new Error(err)
-        console.log("result", result)
-    })
-
-    const insertQuery = `
-    INSERT INTO learnings
-    SET learnings = '${learning}'`
-
-    conn.query(insertQuery, function (err, result) {
-        if (err) throw new Error(err)
-        return res.json('Data inserted successfully')
-    })
-}
